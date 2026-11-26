@@ -25,9 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Until hyper9's libh9 PR merges, main has no libh9; this goes back to
-  # main then.
-  HYPER9_REF: ${{ inputs.hyper9_ref || 'claude/project-thread-prxykq' }}
+  HYPER9_REF: ${{ inputs.hyper9_ref || 'main' }}
   ZIG_VERSION: 0.17.1
 
 jobs:
