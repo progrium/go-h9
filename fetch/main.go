@@ -1,8 +1,8 @@
-// Command h9lib fetches libh9 from the hyper9 release go-h9 is pinned
+// Command fetch fetches libh9 from the hyper9 release go-libh9 is pinned
 // to, checks it against the pinned checksum, and puts it where the h9
 // package looks for it:
 //
-//	go run github.com/progrium/go-h9/cmd/h9lib
+//	go run github.com/progrium/go-libh9/fetch
 //
 // With -o DIR it writes the library to DIR instead, such as next to a
 // program you ship. -os and -arch fetch another platform's.
@@ -25,7 +25,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/progrium/go-h9/internal/pin"
+	"github.com/progrium/go-libh9/internal/pin"
 )
 
 // targets maps GOOS/GOARCH to the Zig target hyper9's release names
@@ -43,14 +43,14 @@ func main() {
 	out := flag.String("o", "", "directory to write the library to (default: the h9 package's cache directory)")
 	flag.Parse()
 	if err := run(*goos, *goarch, *out); err != nil {
-		fmt.Fprintln(os.Stderr, "h9lib:", err)
+		fmt.Fprintln(os.Stderr, "fetch:", err)
 		os.Exit(1)
 	}
 }
 
 func run(goos, goarch, out string) error {
 	if pin.Version == "" {
-		return fmt.Errorf("go-h9 isn't pinned to a hyper9 release with libh9 yet; build it from a hyper9 checkout with `zig build libh9 -Doptimize=ReleaseSafe` and set H9_LIBRARY to zig-out/libh9/%s", libFile(goos))
+		return fmt.Errorf("go-libh9 isn't pinned to a hyper9 release with libh9 yet; build it from a hyper9 checkout with `zig build libh9 -Doptimize=ReleaseSafe` and set H9_LIBRARY to zig-out/libh9/%s", libFile(goos))
 	}
 	target, ok := targets[goos+"/"+goarch]
 	if !ok {
@@ -61,7 +61,7 @@ func run(goos, goarch, out string) error {
 		if err != nil {
 			return err
 		}
-		out = filepath.Join(dir, "go-h9", pin.Version, goos+"-"+goarch)
+		out = filepath.Join(dir, "go-libh9", pin.Version, goos+"-"+goarch)
 	}
 
 	ext := ".tar.gz"

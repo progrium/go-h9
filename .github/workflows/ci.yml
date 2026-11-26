@@ -1,10 +1,10 @@
-# Builds libh9 from hyper9 and runs go-h9's tests against it on each
+# Builds libh9 from hyper9 and runs go-libh9's tests against it on each
 # platform libh9 ships for, without cgo, plus vet and a cross-compile of
 # every GOOS/GOARCH the package supports.
 #
 # HYPER9_REF is the hyper9 commit, branch, or tag libh9 is built from.
-# Once go-h9 is pinned to a release (internal/pin), the same tests run
-# against the release's libh9 as fetched by cmd/h9lib.
+# Once go-libh9 is pinned to a release (internal/pin), the same tests run
+# against the release's libh9 as fetched by the fetch command.
 name: ci
 
 on:

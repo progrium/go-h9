@@ -1,4 +1,4 @@
-module github.com/progrium/go-h9
+module github.com/progrium/go-libh9
 
 go 1.25.0
 

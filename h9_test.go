@@ -13,15 +13,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/progrium/go-h9"
+	"github.com/progrium/go-libh9"
 )
 
-// The tests need libh9: $H9_LIBRARY, or one cmd/h9lib fetched. With
+// The tests need libh9: $H9_LIBRARY, or one the fetch command fetched. With
 // $H9_TEST_ROOT, a 9front root tree, they also run rc in it.
 
 func TestMain(m *testing.M) {
 	if _, err := h9.Version(); err != nil {
-		fmt.Fprintln(os.Stderr, "skipping go-h9's tests:", err)
+		fmt.Fprintln(os.Stderr, "skipping go-libh9's tests:", err)
 		if os.Getenv("H9_TEST_REQUIRE") != "" {
 			os.Exit(1)
 		}

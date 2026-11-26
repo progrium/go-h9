@@ -76,7 +76,7 @@ func LibraryFile() string {
 
 // LibraryPath is where the package loads libh9 from when [Load] isn't
 // called: the first of $H9_LIBRARY, [LibraryFile] next to the
-// executable, and [LibraryFile] in the cache directory cmd/h9lib fetches
+// executable, and [LibraryFile] in the cache directory the fetch command fetches
 // it into, that exists.
 func LibraryPath() (string, error) {
 	if p := os.Getenv("H9_LIBRARY"); p != "" {
@@ -97,10 +97,10 @@ func LibraryPath() (string, error) {
 		}
 		tried = append(tried, p)
 	}
-	return "", fmt.Errorf("h9: libh9 not found (tried %q); fetch it with `go run github.com/progrium/go-h9/cmd/h9lib`, or set H9_LIBRARY", tried)
+	return "", fmt.Errorf("h9: libh9 not found (tried %q); fetch it with `go run github.com/progrium/go-libh9/fetch`, or set H9_LIBRARY", tried)
 }
 
-// CacheDir is where cmd/h9lib puts the libh9 this package is pinned to
+// CacheDir is where the fetch command puts the libh9 this package is pinned to
 // ([LibVersion]) for this platform.
 func CacheDir() (string, error) {
 	if LibVersion == "" {
@@ -110,7 +110,7 @@ func CacheDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "go-h9", LibVersion, runtime.GOOS+"-"+runtime.GOARCH), nil
+	return filepath.Join(dir, "go-libh9", LibVersion, runtime.GOOS+"-"+runtime.GOARCH), nil
 }
 
 func load(path string) error {

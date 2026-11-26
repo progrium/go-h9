@@ -2,7 +2,7 @@
 //
 // It wraps libh9, h9's C ABI, which it loads at run time with purego, so
 // it builds without cgo and cross-compiles like any Go package. The
-// library itself comes from a hyper9 release (see cmd/h9lib) or a
+// library itself comes from a hyper9 release (see the fetch command) or a
 // hyper9 checkout (`zig build libh9`); see [LibraryPath] for where it's
 // looked for.
 //

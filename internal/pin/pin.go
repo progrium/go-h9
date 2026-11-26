@@ -1,5 +1,5 @@
-// Package pin is the libh9 release go-h9 is pinned to, and its
-// checksums, for cmd/h9lib and the library search.
+// Package pin is the libh9 release go-libh9 is pinned to, and its
+// checksums, for the fetch command and the library search.
 package pin
 
 import (
@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Version is the hyper9 release tag whose libh9 archives cmd/h9lib
+// Version is the hyper9 release tag whose libh9 archives the fetch command
 // fetches, or "" before one is pinned. scripts/pin.sh sets it, with
 // SHA256SUMS.
 const Version = ""

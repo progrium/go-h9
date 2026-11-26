@@ -1,10 +1,10 @@
-# go-h9
+# go-libh9
 
 Go bindings for [h9](https://github.com/progrium/hyper9): run 9front and
 Linux programs in isolated h9 machines from a Go program.
 
 ```go
-import "github.com/progrium/go-h9"
+import "github.com/progrium/go-libh9" // package h9
 
 m, err := h9.NewMachine("--dir", "/path/to/9front/root", "--net", "disable", "--timeout", "30s")
 if err != nil {
@@ -51,19 +51,19 @@ run, so it comes separately. The package looks for it, in order:
 2. at `$H9_LIBRARY`;
 3. next to the program's executable (`libh9.so`, `libh9.dylib`, or
    `h9.dll`);
-4. in the user's cache directory, where `cmd/h9lib` puts it.
+4. in the user's cache directory, where the `fetch` command puts it.
 
-`cmd/h9lib` downloads the libh9 archive for this platform from the hyper9
+The `fetch` command downloads the libh9 archive for this platform from the hyper9
 release this module is pinned to, and checks it against the checksum
 committed here in `internal/pin`:
 
 ```sh
-go run github.com/progrium/go-h9/cmd/h9lib            # into the cache
-go run github.com/progrium/go-h9/cmd/h9lib -o ./dist   # next to a program you ship
+go run github.com/progrium/go-libh9/fetch            # into the cache
+go run github.com/progrium/go-libh9/fetch -o ./dist   # next to a program you ship
 ```
 
 Releases have libh9 for Linux on amd64 and arm64 (against glibc), macOS
-on arm64, and Windows on amd64. Until go-h9 is pinned to one, or to use
+on arm64, and Windows on amd64. Until go-libh9 is pinned to one, or to use
 an unreleased h9, build it from a hyper9 checkout:
 
 ```sh

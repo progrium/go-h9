@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pins go-h9 to a hyper9 release's libh9: sets internal/pin.Version and
+# Pins go-libh9 to a hyper9 release's libh9: sets internal/pin.Version and
 # copies the release's libh9 checksums into internal/pin/SHA256SUMS.
 #
 #   scripts/pin.sh TAG
