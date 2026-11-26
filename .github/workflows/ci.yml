@@ -1,0 +1,103 @@
+# Builds libh9 from hyper9 and runs go-h9's tests against it on each
+# platform libh9 ships for, without cgo, plus vet and a cross-compile of
+# every GOOS/GOARCH the package supports.
+#
+# HYPER9_REF is the hyper9 commit, branch, or tag libh9 is built from.
+# Once go-h9 is pinned to a release (internal/pin), the same tests run
+# against the release's libh9 as fetched by cmd/h9lib.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      hyper9_ref:
+        description: hyper9 ref to build libh9 from
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Until hyper9's libh9 PR merges, main has no libh9; this goes back to
+  # main then.
+  HYPER9_REF: ${{ inputs.hyper9_ref || 'claude/project-thread-prxykq' }}
+  ZIG_VERSION: 0.17.1
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+      - run: go vet ./...
+      - name: cross-compile
+        env:
+          CGO_ENABLED: "0"
+        run: |
+          for p in linux/amd64 linux/arm64 darwin/arm64 windows/amd64; do
+            GOOS=${p%/*} GOARCH=${p#*/} go vet ./...
+            GOOS=${p%/*} GOARCH=${p#*/} go build ./...
+            GOOS=${p%/*} GOARCH=${p#*/} go test -c -o /dev/null .
+          done
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            lib: libh9.so
+          - os: ubuntu-24.04-arm
+            lib: libh9.so
+          - os: macos-latest
+            lib: libh9.dylib
+          - os: windows-latest
+            lib: h9.dll
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: progrium/hyper9
+          ref: ${{ env.HYPER9_REF }}
+          path: hyper9
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+          cache-key: libh9
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      # The machines KVM makes need /dev/kvm, which the runner's user
+      # can't open by default.
+      - if: runner.os == 'Linux'
+        run: |
+          if [ -e /dev/kvm ]; then
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
+          fi
+      - name: build libh9
+        working-directory: hyper9
+        run: zig build libh9 -Doptimize=ReleaseSafe
+      - name: test
+        env:
+          CGO_ENABLED: "0"
+          H9_TEST_REQUIRE: "1"
+        run: |
+          export H9_LIBRARY="$PWD/hyper9/zig-out/libh9/${{ matrix.lib }}"
+          if [ "$RUNNER_OS" = Windows ]; then H9_LIBRARY=$(cygpath -w "$H9_LIBRARY"); fi
+          go test -v -count=1 ./...
